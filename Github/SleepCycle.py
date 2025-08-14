@@ -14,6 +14,15 @@ signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
 # Replace this with your secret OCID if you need to fetch a key
 secret_id = "ocid1.vaultsecret.oc1.ca-toronto-1.amaaaaaavcvqqaqaoolhuxzifpokmj2brdsxtbbx2cnzmelrwjwd3dwpfxka"
 print("temp1")
+
+compute_client = oci.core.ComputeClient(config={}, signer=signer)
+
+instances = compute_client.list_instances(
+    compartment_id="ocid1.tenancy.oc1..aaaaaaaanpptjh3zuc6p6xfby3t5hn667oernezt5xadozkwys4nes5yu4ia"
+)
+for inst in instances.data:
+    print(inst.display_name, inst.id)
+
 try:
     secrets_client = oci.secrets.SecretsClient(config={}, signer=signer)
     get_secret_response = secrets_client.get_secret_bundle(secret_id)
