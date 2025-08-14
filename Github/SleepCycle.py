@@ -1,43 +1,51 @@
 import oci
-import tempfile
 import base64
+import tempfile
 
-print("Loading private key from Oracle Vault...")
-# Use instance principals to avoid storing creds locally
+# -------------------------------
+# Authenticate using Instance Principals
+# -------------------------------
+print("Authenticating using Instance Principals...")
 signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
 
-# Create Vault client
-secrets_client = oci.secrets.SecretsClient(config={}, signer=signer)
-
-# OCID of the secret from Vault Console
+# -------------------------------
+# Vault secret access (optional)
+# -------------------------------
+# Replace this with your secret OCID if you need to fetch a key
 secret_id = "ocid1.vaultsecret.oc1.ca-toronto-1.amaaaaaavcvqqaqaoolhuxzifpokmj2brdsxtbbx2cnzmelrwjwd3dwpfxka"
 
-# Get the secret bundle
-get_secret_response = secrets_client.get_secret_bundle(secret_id)
+try:
+    secrets_client = oci.secrets.SecretsClient(config={}, signer=signer)
+    get_secret_response = secrets_client.get_secret_bundle(secret_id)
+    secret_content = get_secret_response.data.secret_bundle_content.content
+    private_key_pem = base64.b64decode(secret_content).decode("utf-8")
 
-# Extract the key content
-secret_content = get_secret_response.data.secret_bundle_content.content
-private_key_pem = base64.b64decode(secret_content).decode("utf-8")
+    # Write key to a temporary file (if you need a key file)
+    with tempfile.NamedTemporaryFile(delete=False) as key_file:
+        key_file.write(private_key_pem.encode("utf-8"))
+        key_file_path = key_file.name
 
-print("Private key loaded from Vault:")
-print(private_key_pem)
+    print("Private key loaded from Vault and written to temp file:", key_file_path)
 
+except oci.exceptions.ServiceError as e:
+    print("Could not fetch secret from Vault:", e)
+    key_file_path = None
 
-# Write key to a temp file in memory-safe way
-with tempfile.NamedTemporaryFile(delete=False) as key_file:
-    key_file.write(private_key_pem.encode("utf-8"))
-    key_file_path = key_file.name
+# -------------------------------
+# Create Compute Client
+# -------------------------------
+compute_client = oci.core.ComputeClient(config={}, signer=signer)
 
-print("wrote to temp")
+# -------------------------------
+# Start or Stop an instance
+# -------------------------------
+# Replace with your VM OCID
+instance_ocid = "<BIG_VM_OCID>"
 
-config = {
-    "user": "ocid1.user.oc1..aaaaaaaaubzm3qcl2j54amchy2v4hrzaohzxhpvcfmj6ptqtc6c2tzqbzelq",
-    "fingerprint": "19:26:57:30:94:27:83:81:01:2e:77:f1:83:5a:25:d3",
-    "tenancy": "ocid1.tenancy.oc1..aaaaaaaanpptjh3zuc6p6xfby3t5hn667oernezt5xadozkwys4nes5yu4iaregion=ca-toronto-1",
-    "region": "ca-toronto-1",
-    "key_file": key_file_path
-}
+# Example: start the instance
+compute_client.instance_action(instance_ocid, "START")
+print(f"Instance {instance_ocid} started.")
 
-compute_client = oci.core.ComputeClient(config)
-compute_client.instance_action("<BIG_VM_OCID>", "START")
-print("Big VM stopped")
+# Example: stop the instance
+# compute_client.instance_action(instance_ocid, "STOP")
+# print(f"Instance {instance_ocid} stopped.")
