@@ -43,7 +43,7 @@ def toggle_big_state(IsStart):
     print(f"Instance {instance_ocid} started.")
 
 
-while True:     
+while False:     
     now = dt.datetime.now()
     target = now.replace(hour=8, minute=0, second=0, microsecond=0)
 
@@ -68,4 +68,7 @@ while True:
     print("Turning instance off...")
     toggle_big_state(False)
 
+print ("Script ended")
+
+toggle_big_state(True)
 
