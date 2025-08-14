@@ -1,6 +1,8 @@
 import oci
 import tempfile
 import base64
+
+print("Loading private key from Oracle Vault...")
 # Use instance principals to avoid storing creds locally
 signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
 
