@@ -40,7 +40,7 @@ compute_client = oci.core.ComputeClient(config={}, signer=signer)
 # Start or Stop an instance
 # -------------------------------
 # Replace with your VM OCID
-instance_ocid = "<BIG_VM_OCID>"
+instance_ocid = "ocid1.instance.oc1.ca-toronto-1.an2g6ljrvcvqqaqc5gt4j5u7lrtjgx5u66qskxuopbdidghgz6zm2v7ctn3a"
 
 # Example: start the instance
 compute_client.instance_action(instance_ocid, "START")
