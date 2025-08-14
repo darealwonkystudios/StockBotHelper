@@ -13,7 +13,7 @@ signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
 # -------------------------------
 # Replace this with your secret OCID if you need to fetch a key
 secret_id = "ocid1.vaultsecret.oc1.ca-toronto-1.amaaaaaavcvqqaqaoolhuxzifpokmj2brdsxtbbx2cnzmelrwjwd3dwpfxka"
-
+print("temp1")
 try:
     secrets_client = oci.secrets.SecretsClient(config={}, signer=signer)
     get_secret_response = secrets_client.get_secret_bundle(secret_id)
@@ -30,6 +30,8 @@ try:
 except oci.exceptions.ServiceError as e:
     print("Could not fetch secret from Vault:", e)
     key_file_path = None
+
+print("tem2")
 
 # -------------------------------
 # Create Compute Client
