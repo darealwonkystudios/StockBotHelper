@@ -28,6 +28,8 @@ with tempfile.NamedTemporaryFile(delete=False) as key_file:
     key_file.write(private_key_pem.encode("utf-8"))
     key_file_path = key_file.name
 
+print("wrote to temp")
+
 config = {
     "user": "ocid1.user.oc1..aaaaaaaaubzm3qcl2j54amchy2v4hrzaohzxhpvcfmj6ptqtc6c2tzqbzelq",
     "fingerprint": "19:26:57:30:94:27:83:81:01:2e:77:f1:83:5a:25:d3",
